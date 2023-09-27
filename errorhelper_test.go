@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/solsw/builtinhelper"
 )
 
 func TestUnwrapErrors(t *testing.T) {
@@ -43,5 +45,33 @@ func TestUnwrapErrors(t *testing.T) {
 				t.Errorf("UnwrapErrors() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestMust(t *testing.T) {
+	got := func() (err error) {
+		defer func() {
+			builtinhelper.PanicToError(recover(), &err)
+		}()
+		Must(nil)
+		return nil
+	}()
+	if got != nil {
+		t.Errorf("Must = %v, want 'nil'", got)
+	}
+}
+
+func TestMust_panic(t *testing.T) {
+	const must_error = "Must error"
+	got := func() (err error) {
+		defer func() {
+			builtinhelper.PanicToError(recover(), &err)
+		}()
+		Must(errors.New(must_error))
+		return nil
+	}()
+	want := must_error
+	if !reflect.DeepEqual(got.Error(), want) {
+		t.Errorf("Must_panic = %v, want %v", got, want)
 	}
 }

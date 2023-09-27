@@ -14,3 +14,12 @@ func UnwrapErrors(err error) []error {
 	}
 	return u.Unwrap()
 }
+
+// Must [panics] with 'err', if 'err' is not nil.
+//
+// [panics]: https://pkg.go.dev/builtin#panic
+func Must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
