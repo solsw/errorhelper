@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-
-	"github.com/solsw/builtinhelper"
 )
 
 func TestUnwrapErrors(t *testing.T) {
@@ -51,7 +49,7 @@ func TestUnwrapErrors(t *testing.T) {
 func TestMust0(t *testing.T) {
 	got := func() (err error) {
 		defer func() {
-			builtinhelper.PanicToError(recover(), &err)
+			PanicToError(recover(), &err)
 		}()
 		Must0(nil)
 		return nil
@@ -65,7 +63,7 @@ func TestMust0_panic(t *testing.T) {
 	const must_error = "Must error"
 	got := func() (err error) {
 		defer func() {
-			builtinhelper.PanicToError(recover(), &err)
+			PanicToError(recover(), &err)
 		}()
 		Must0(errors.New(must_error))
 		return nil
@@ -93,7 +91,7 @@ func TestMust_panic(t *testing.T) {
 	const must_error = "Must error"
 	got := func() (err error) {
 		defer func() {
-			builtinhelper.PanicToError(recover(), &err)
+			PanicToError(recover(), &err)
 		}()
 		Must(23, errors.New(must_error))
 		return nil
@@ -108,7 +106,7 @@ func TestMust_panic2(t *testing.T) {
 	const must_error = "Must error"
 	got := func() (err error) {
 		defer func() {
-			builtinhelper.PanicToError(recover(), &err)
+			PanicToError(recover(), &err)
 		}()
 		Must[any](nil, errors.New(must_error))
 		return nil
