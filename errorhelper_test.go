@@ -46,7 +46,7 @@ func TestUnwrapErrors(t *testing.T) {
 	}
 }
 
-func TestMust0(t *testing.T) {
+func TestMust0_nil(t *testing.T) {
 	got := func() (err error) {
 		defer func() {
 			PanicToError(recover(), &err)
@@ -114,5 +114,40 @@ func TestMust_panic2(t *testing.T) {
 	want := must_error
 	if !reflect.DeepEqual(got.Error(), want) {
 		t.Errorf("Must_panic2 = %v, want %v", got, want)
+	}
+}
+
+func TestMust2_nil(t *testing.T) {
+	got := func() (err error) {
+		defer func() {
+			PanicToError(recover(), &err)
+		}()
+		Must2(1, "one", nil)
+		return nil
+	}()
+	if got != nil {
+		t.Errorf("Must2 = %v, want 'nil'", got)
+	}
+}
+
+func TestMust2_int_string(t *testing.T) {
+	want_int, want_string := 1, "one"
+	if got_int, got_string := Must2(1, "one", nil); got_int != want_int || got_string != want_string {
+		t.Errorf("Must2[int, string] = (%v, %v) want (%v, %v)", got_int, got_string, want_int, want_string)
+	}
+}
+
+func TestMust2_panic(t *testing.T) {
+	const must_error = "Must error"
+	got := func() (err error) {
+		defer func() {
+			PanicToError(recover(), &err)
+		}()
+		Must2(1, "one", errors.New(must_error))
+		return nil
+	}()
+	want := must_error
+	if !reflect.DeepEqual(got.Error(), want) {
+		t.Errorf("Must2_panic = %v, want %v", got, want)
 	}
 }
