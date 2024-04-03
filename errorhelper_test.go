@@ -151,3 +151,42 @@ func TestMust2_panic(t *testing.T) {
 		t.Errorf("Must2_panic = %v, want %v", got, want)
 	}
 }
+
+func TestCallerError(t *testing.T) {
+	error1 := errors.New("error1")
+	type args struct {
+		err error
+	}
+	tests := []struct {
+		name        string
+		args        args
+		wantErr     bool
+		expectedErr error
+	}{
+		{name: "nil",
+			args:    args{err: nil},
+			wantErr: false,
+		},
+		{name: "error1",
+			args:        args{err: error1},
+			wantErr:     true,
+			expectedErr: error1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := CallerError(tt.args.err)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CallerError() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.wantErr {
+				t.Logf("%v", err)
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("CallerError() error = %v, expectedErr %v", err, tt.expectedErr)
+				}
+				return
+			}
+		})
+	}
+}
