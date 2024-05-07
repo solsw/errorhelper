@@ -52,7 +52,8 @@ func Must2[R1, R2 any](r1 R1, r2 R2, err error) (R1, R2) {
 	return r1, r2
 }
 
-// CallerError prepends the provided error with caller function name.
+// CallerError prepends the provided error (if not nil) with caller function name.
+// If 'err' is nil, nil is returned.
 func CallerError(err error) error {
 	if err == nil {
 		return nil
