@@ -152,8 +152,9 @@ func TestMust2_panic(t *testing.T) {
 	}
 }
 
+var error1 = errors.New("error1")
+
 func TestCallerError(t *testing.T) {
-	error1 := errors.New("error1")
 	type args struct {
 		err error
 	}
@@ -189,4 +190,29 @@ func TestCallerError(t *testing.T) {
 			}
 		})
 	}
+}
+
+type errMethod struct {
+}
+
+func (errMethod) Error1() error {
+	return CallerError(error1)
+}
+
+func (*errMethod) Error2() error {
+	return CallerError(error1)
+}
+
+func ExampleCallerError() {
+	errf := CallerError(error1)
+	fmt.Println(errf.Error())
+	ermth := errMethod{}
+	errm1 := ermth.Error1()
+	fmt.Println(errm1.Error())
+	errm2 := ermth.Error2()
+	fmt.Println(errm2.Error())
+	// Output:
+	// ExampleCallerError: error1
+	// errMethod.Error1: error1
+	// (*errMethod).Error2: error1
 }
