@@ -66,11 +66,11 @@ func CallerError(err error, params ...any) error {
 	_, s3, _ := strings.Cut(s2, ".")
 	format := "%s:"
 	a := []any{s3}
-	for _, param := range params {
-		format += " %v:"
-		a = append(a, param)
+	if len(params) > 0 {
+		format += strings.Repeat("%v", len(params))
+		a = append(a, params...)
 	}
-	format += " %w"
+	format += "%w"
 	a = append(a, err)
 	return fmt.Errorf(format, a...)
 }

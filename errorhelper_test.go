@@ -169,13 +169,13 @@ func TestCallerError(t *testing.T) {
 			args:    args{err: nil},
 			wantErr: false,
 		},
-		{name: "error1",
+		{name: "error",
 			args:        args{err: error1},
 			wantErr:     true,
 			expectedErr: error1,
 		},
-		{name: "error1 with params",
-			args:        args{err: error1, params: []any{"param1", "param2"}},
+		{name: "error with params",
+			args:        args{err: error1, params: []any{" param1", " param2", " "}},
 			wantErr:     true,
 			expectedErr: error1,
 		},
@@ -210,15 +210,18 @@ func (*errMethod) Error2() error {
 }
 
 func ExampleCallerError() {
-	errf := CallerError(error1)
-	fmt.Println(errf.Error())
+	errf1 := CallerError(error1)
+	fmt.Println(errf1.Error())
+	errf2 := CallerError(error1, " ")
+	fmt.Println(errf2.Error())
 	ermth := errMethod{}
 	errm1 := ermth.Error1()
 	fmt.Println(errm1.Error())
 	errm2 := ermth.Error2()
 	fmt.Println(errm2.Error())
 	// Output:
+	// ExampleCallerError:error1
 	// ExampleCallerError: error1
-	// errMethod.Error1: error1
-	// (*errMethod).Error2: error1
+	// errMethod.Error1:error1
+	// (*errMethod).Error2:error1
 }
