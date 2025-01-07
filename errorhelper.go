@@ -52,9 +52,9 @@ func Must2[R1, R2 any](r1 R1, r2 R2, err error) (R1, R2) {
 	return r1, r2
 }
 
-// CallerError prepends the provided error with caller function/method name.
+// CallerError prepends the provided error with caller function/method name and the provided parameters.
 // If 'err' is nil, nil is returned.
-func CallerError(err error) error {
+func CallerError(err error, params ...any) error {
 	if err == nil {
 		return nil
 	}
@@ -64,5 +64,13 @@ func CallerError(err error) error {
 	}
 	s2, _, _ := strings.Cut(s1, "[")
 	_, s3, _ := strings.Cut(s2, ".")
-	return fmt.Errorf("%s: %w", s3, err)
+	format := "%s:"
+	a := []any{s3}
+	for _, param := range params {
+		format += " %v:"
+		a = append(a, param)
+	}
+	format += " %w"
+	a = append(a, err)
+	return fmt.Errorf(format, a...)
 }

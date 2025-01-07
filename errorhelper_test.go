@@ -156,7 +156,8 @@ var error1 = errors.New("error1")
 
 func TestCallerError(t *testing.T) {
 	type args struct {
-		err error
+		err    error
+		params []any
 	}
 	tests := []struct {
 		name        string
@@ -173,10 +174,15 @@ func TestCallerError(t *testing.T) {
 			wantErr:     true,
 			expectedErr: error1,
 		},
+		{name: "error1 with params",
+			args:        args{err: error1, params: []any{"param1", "param2"}},
+			wantErr:     true,
+			expectedErr: error1,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := CallerError(tt.args.err)
+			err := CallerError(tt.args.err, tt.args.params...)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CallerError() error = %v, wantErr %v", err, tt.wantErr)
 				return
