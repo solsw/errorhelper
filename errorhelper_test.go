@@ -202,11 +202,11 @@ type errMethod struct {
 }
 
 func (errMethod) Error1() error {
-	return CallerError(error1)
+	return CallerError(error1, ": ")
 }
 
 func (*errMethod) Error2() error {
-	return CallerError(error1)
+	return CallerError(error1, "--")
 }
 
 func ExampleCallerError() {
@@ -221,7 +221,7 @@ func ExampleCallerError() {
 	fmt.Println(errm2.Error())
 	// Output:
 	// ExampleCallerError:error1
-	// ExampleCallerError: error1
-	// errMethod.Error1:error1
-	// (*errMethod).Error2:error1
+	// ExampleCallerError error1
+	// errMethod.Error1: error1
+	// (*errMethod).Error2--error1
 }
