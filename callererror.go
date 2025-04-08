@@ -33,7 +33,7 @@ func callerErrorPrim(err error, withPackage bool, params ...any) error {
 	return fmt.Errorf(format, a...)
 }
 
-// CallerError prepends the provided error error's Error() with caller function/method name
+// CallerError prepends the provided error's Error() with caller function/method name
 // and the provided parameters. If there are no parameters, colon is used.
 // If 'err' is nil, nil is returned.
 func CallerError(err error, params ...any) error {
