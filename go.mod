@@ -1,5 +1,5 @@
 module github.com/solsw/errorhelper
 
-go 1.20
+go 1.26
 
-require github.com/solsw/runtimehelper v0.2.0
+require github.com/solsw/runtimehelper v0.5.0

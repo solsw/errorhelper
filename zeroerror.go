@@ -1,16 +1,13 @@
 package errorhelper
 
-// Pointer to ZeroError is a do-nothing [error].
-//
-// [error]: https://go.dev/ref/spec#Errors
-type ZeroError struct{}
+type zeroError struct{}
 
-// Error implements the [error] interface.
-//
-// [error]: https://pkg.go.dev/builtin#error
-func (*ZeroError) Error() string {
+func (*zeroError) Error() string {
 	return "zero error"
 }
 
-// ErrZeroNil is a nil pointer to [ZeroError].
-var ErrZeroNil *ZeroError = nil
+// ErrZeroNil is a sentinel [error] that signals a do-nothing (no-op) condition.
+// It is a non-nil error value; use [errors.Is] to check for it.
+//
+// [error]: https://go.dev/ref/spec#Errors
+var ErrZeroNil = new(zeroError)

@@ -10,8 +10,11 @@ import (
 //   - if surrounding function panics with an [error], this error is returned;
 //   - if surrounding function panics with a [string], the error wrapping this string is returned;
 //   - if surrounding function panics with a [fmt.Stringer], the error wrapping [fmt.Stringer.String] is returned;
-//   - if surrounding function panics with an [encoding.TextMarshaler], the error wrapping [encoding.TextMarshaler.MarshalText] is returned;
+//   - if surrounding function panics with an [encoding.TextMarshaler] and [encoding.TextMarshaler.MarshalText] succeeds, the error wrapping the marshaled text is returned;
 //   - otherwise the panic is reraised.
+//
+// Cases are matched in the order listed; a type implementing both [fmt.Stringer] and [encoding.TextMarshaler]
+// is handled by the [fmt.Stringer] case.
 //
 // PanicToError must be called from a [defer] statement:
 //

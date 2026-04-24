@@ -1,7 +1,7 @@
 package errorhelper
 
 // UnwrapErrors returns the result of calling [Unwrap] method on 'err',
-// in case if err's type contains an [Unwrap] method that returns []error.
+// in case err's type contains an [Unwrap] method that returns []error.
 // Otherwise or if the [Unwrap] method returns single error, UnwrapErrors returns nil.
 //
 // [Unwrap]: https://pkg.go.dev/errors#pkg-overview
