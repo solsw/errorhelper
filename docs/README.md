@@ -1,5 +1,5 @@
 # errorhelper
-[![GitHub](https://img.shields.io/badge/git-github.com-green)](https://github.com/solsw/errorhelper)
+[![GitHub](https://img.shields.io/badge/github--green?logo=github)](https://github.com/solsw/errorhelper)
 
 Package `errorhelper` contains [error](https://go.dev/ref/spec#Errors)-related helpers.
 
