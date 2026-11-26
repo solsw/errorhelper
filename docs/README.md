@@ -22,26 +22,30 @@ import "github.com/solsw/errorhelper"
 func CallerError(err error, params ...any) error
 ```
 
-CallerError prepends the provided error's `Error()` with the caller function/method name
-and the provided parameters. If there are no parameters, a colon is used as the separator.
-Parameters are formatted with no automatic separators, so include any desired spacing or
-punctuation in the parameter values (e.g. `": "` or `" "`). If `err` is nil, nil is returned.
-The original error is wrapped, so it remains accessible via `errors.Is`/`errors.As`.
+`CallerError` wraps `err` with the name of the function or method that called it.
+Call it directly from the function you want to identify. For a generic method, the
+name includes its receiver and omits type arguments.
 
-CallerError must be called directly from the function whose name should appear in the error;
-wrapping it in a helper shifts the call stack and produces the wrong name.
+With no extra arguments, the message is `caller:error`. With arguments, each value
+is formatted with `%v` and placed between the caller name and the error message.
+Supply any spaces or punctuation you want in the result.
 
 ```go
-func doSomething() error {
-	err := errors.New("something failed")
-	return errorhelper.CallerError(err)
-	// error message: "doSomething:something failed"
+var ErrMissing = errors.New("missing record")
+
+type Store[T any] struct{}
+
+func (Store[T]) Read(id int) error {
+	return errorhelper.CallerError(ErrMissing, " id=", id, ": ")
 }
 
-func doSomethingElse(id int) error {
-	err := errors.New("something failed")
-	return errorhelper.CallerError(err, " id=", id, ": ")
-	// error message: "doSomethingElse id=42: something failed"
+func ExampleCallerError() {
+	err := Store[int]{}.Read(42)
+	fmt.Println(err)
+	fmt.Println(errors.Is(err, ErrMissing))
+	// Output:
+	// Store.Read id=42: missing record
+	// true
 }
 ```
 
@@ -51,16 +55,19 @@ func doSomethingElse(id int) error {
 func PackageCallerError(err error, params ...any) error
 ```
 
-PackageCallerError works like [CallerError](#callererror), but the caller function/method name
-is prepended with the package name.
+`PackageCallerError` adds a package label to the caller name. It uses the final
+import path component, skipping a terminal major version of `/v2` or higher.
+The label can differ from the declared package name.
 
-```go
-func doSomething() error {
-	err := errors.New("something failed")
-	return errorhelper.PackageCallerError(err)
-	// error message: "mypackage.doSomething:something failed"
-}
-```
+| Caller import path | Caller | Message for `errors.New("missing")` |
+| --- | --- | --- |
+| `example.org/service/v2` | `Open` | `service.Open:missing` |
+| `example.org/service/v2` | `(*Store[T]).Write` | `service.(*Store).Write:missing` |
+| `example.org/service/v2/client` | `Open` | `client.Open:missing` |
+
+Both helpers return `nil` for a nil error. If the runtime cannot identify the
+caller, they return the original error directly. Wrapped errors preserve the
+error chain for `errors.Is` and `errors.As`.
 
 ### PanicToError
 

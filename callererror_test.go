@@ -8,6 +8,43 @@ import (
 
 var error1 = errors.New("error1")
 
+type store[T any] struct{}
+
+func (store[T]) Read() error   { return CallerError(error1) }
+func (*store[T]) Write() error { return PackageCallerError(error1) }
+
+func TestGenericReceiver(t *testing.T) {
+	var s store[int]
+	if got := s.Read().Error(); got != "store.Read:error1" {
+		t.Errorf("Read returned %q", got)
+	}
+	if got := s.Write().Error(); got != "errorhelper.(*store).Write:error1" {
+		t.Errorf("Write returned %q", got)
+	}
+}
+
+func TestPackageCallerErrorImportPath(t *testing.T) {
+	for _, tt := range []struct{ symbol, want string }{
+		{"example.org/service/v2.Open", "service.Open:error1"},
+		{"example.org/service/v10.(*Store[...]).Write", "service.(*Store).Write:error1"},
+		{"example.org/service/v2/client.Open", "client.Open:error1"},
+		{"example.org/service/v2beta.Open", "v2beta.Open:error1"},
+		{"example.org/service/v1.Open", "v1.Open:error1"},
+	} {
+		if got := wrapCallerError(error1, tt.symbol, true).Error(); got != tt.want {
+			t.Errorf("%s produced %q, want %q", tt.symbol, got, tt.want)
+		}
+	}
+}
+
+func TestUnavailableCaller(t *testing.T) {
+	for _, withPackage := range []bool{false, true} {
+		if got := wrapCallerError(error1, "", withPackage, " details: "); got != error1 {
+			t.Errorf("withPackage=%t returned %q, want original error", withPackage, got)
+		}
+	}
+}
+
 func TestCallerError(t *testing.T) {
 	type args struct {
 		err    error
